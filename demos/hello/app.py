@@ -28,7 +28,8 @@ def say_hello():
 @app.route('/greet', defaults={'name': 'Programmer'})
 @app.route('/greet/<name>')
 def greet(name):
-    return '<h1>Hello, %s!</h1>' % name
+#    return '<h1>Hello, %s!</h1>' % name
+    return '<h1>hello, ' + name + '</h1>'
 
 
 # custom flask cli command
