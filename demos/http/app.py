@@ -35,13 +35,14 @@ def hello():
     return response
 
 
-# redirect
+# redirect:重定向
 @app.route('/hi')
 def hi():
     return redirect(url_for('hello'))
 
 
-# use int URL converter
+# use int URL converter:转换器的使用（即这里的int），因为默认输入的都被识别为字符串型，
+# 所以按需进行相应转换，也就是数据类型转换
 @app.route('/goback/<int:year>')
 def go_back(year):
     return 'Welcome to %d!' % (2018 - year)
@@ -69,6 +70,7 @@ def not_found():
 
 
 # return response with different formats
+# 展示4种MIME类型的响应数据
 @app.route('/note', defaults={'content_type': 'text'})
 @app.route('/note/<content_type>')
 def note(content_type):
