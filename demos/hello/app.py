@@ -12,6 +12,7 @@ app = Flask(__name__)
 
 
 # the minimal Flask application
+# app.route()装饰器把根地址(/)和函数index()绑定起来，当用户访问该URL(/)时就触发此函数index()
 @app.route('/')
 def index():
     return '<h1>Hello, World!</h1>'
@@ -25,6 +26,7 @@ def say_hello():
 
 
 # dynamic route, URL variable default
+# 绑定动态URL，即URL除了写死的基本部分(/greet)，用户还可手动写入(<name>)
 @app.route('/greet', defaults={'name': 'Programmer'})
 @app.route('/greet/<name>')
 def greet(name):
@@ -36,3 +38,7 @@ def greet(name):
 def hello():
     """Just say hello."""
     click.echo('Hello, Human!')
+
+
+# 执行flask run时，该命令运行的开发服务器默认会监听http://127.0.0.1:5000，
+# http://127.0.0.1即localhost，是指向本地机的IP地址，而5000端口是Flask默认使用的端口。
