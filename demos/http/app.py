@@ -6,6 +6,7 @@
     :license: MIT, see LICENSE for more details.
 """
 import os
+# 由于python2和python3中urlparse, urljoin所在的包不同，所以这里做了个兼容性处理
 try:
     from urlparse import urlparse, urljoin
 except ImportError:
@@ -22,6 +23,7 @@ app.secret_key = os.getenv('SECRET_KEY', 'secret string')
 # get name value from query string and cookie
 @app.route('/')
 @app.route('/hello')
+# 欢迎页面，获取用户登录名，判断其是否认证以返回不同信息，若未查到用户名则以'Human'作为用户名
 def hello():
     name = request.args.get('name')
     if name is None:
@@ -48,7 +50,7 @@ def go_back(year):
     return 'Welcome to %d!' % (2018 - year)
 
 
-# use any URL converter
+# use any URL converter 转换器
 @app.route('/colors/<any(blue, white, red):color>')
 def three_colors(color):
     return '<p>Love is patient and kind. Love is not jealous or boastful or proud or rude.</p>'
@@ -142,7 +144,7 @@ def login():
     return redirect(url_for('hello'))
 
 
-# protect view
+# protect view,只有登录后才可看见此视图
 @app.route('/admin')
 def admin():
     if 'logged_in' not in session:
@@ -161,7 +163,7 @@ def logout():
 # AJAX
 @app.route('/post')
 def show_post():
-    post_body = generate_lorem_ipsum(n=2)
+    post_body = generate_lorem_ipsum(n=3)
     return '''
 <h1>A very long post</h1>
 <div class="body">%s</div>
@@ -188,10 +190,16 @@ def load_post():
 
 
 # redirect to last page
+# request.full_path得到的是当前视图的相对地址，并非全地址
 @app.route('/foo')
 def foo():
+    print('request.full_path: '+request.full_path)
+    print(url_for('do_something', next=request.full_path))
     return '<h1>Foo page</h1><a href="%s">Do something and redirect</a>' \
            % url_for('do_something', next=request.full_path)
+# 这里加了 next=request.full_path，在返回结果上变成了/do-something?next=%2Ffoo%3F
+# 而？后的内容都是查询字符串，以键值对的形式给出，经解析后存储在request.args中，所以在
+# redirect_back()中可以通过request.args.get('next')查到，为/foo
 
 
 @app.route('/bar')
@@ -206,17 +214,19 @@ def do_something():
     return redirect_back()
 
 
+# 检查URL的安全性，即判断它是否为属于程序内部URL
 def is_safe_url(target):
-    ref_url = urlparse(request.host_url)
+    ref_url = urlparse(request.host_url)  # 获取程序内的主机URL
     test_url = urlparse(urljoin(request.host_url, target))
     return test_url.scheme in ('http', 'https') and \
            ref_url.netloc == test_url.netloc
 
 
+# request.referrer存的是全地址
 def redirect_back(default='hello', **kwargs):
-    for target in request.args.get('next'), request.referrer:
+    for target in request.referrer, request.args.get('next'):
         if not target:
             continue
         if is_safe_url(target):
             return redirect(target)
-    return redirect(url_for(default, **kwargs))
+    return redirect(url_for(default, **kwargs))  # 如果前面方法都定位失败，则定位到'hello'视图
