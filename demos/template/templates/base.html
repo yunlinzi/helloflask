@@ -7,6 +7,7 @@
         <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
         {% block styles %}
             <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css' ) }}">
+            {# 存储css规则的文件，可对比watchlist和watchlist_with_static的效果 #}
         {% endblock %}
     {% endblock %}
 </head>

@@ -94,7 +94,7 @@ def watchlist_with_static():
 # message flashing
 @app.route('/flash')
 def just_flash():
-    flash('I am flash, who is looking for me?')
+    flash('你好，这是一条flash')  # flash可用在任意视图函数中，然后在模板中用内置全局函数get_flashed_message()获取flash所传的信息并显示在页面上
     return redirect(url_for('index'))
 
 
