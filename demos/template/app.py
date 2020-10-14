@@ -32,6 +32,9 @@ movies = [
 ]
 
 
+# watchlist.html是在template文件夹下写好的一个模板，通过render_template()函数（Flask提供的渲染函数）
+# 渲染后，原模板中的变量会被替换，注释被删除等，然后用户执行watchlist请求后就看到渲染后的内容，user和movies在
+# 模板中要用到，所以这里传入
 @app.route('/watchlist')
 def watchlist():
     return render_template('watchlist.html', user=user, movies=movies)
@@ -42,7 +45,14 @@ def index():
     return render_template('index.html')
 
 
+@app.route('/base')
+def base():
+    return render_template('base.html')
+
+
 # register template context handler
+# 经过该装饰器注册的函数称为模板上下文处理函数，当用render_template()渲染任意模板时，该上下文处理函数都会被执行，
+# 且函数的返回值被添加进模板，所以可在模板中直接使用它返回的变量。
 @app.context_processor
 def inject_info():
     foo = 'I am foo.'
@@ -50,18 +60,25 @@ def inject_info():
 
 
 # register template global function
+# 将函数注册为模板全局函数（只能注册全局函数），这里和@app.context_processor不同，
+# 经@app.context_processor注册的函数在模板被渲染时自动执行，而这里是成为全局函数，
+# 在模板中可直接调用
 @app.template_global()
 def bar():
     return 'I am bar.'
 
 
 # register template filter
+# 该装饰器注册自定义过滤器，在html模板中使用方法：{{value|filter}}，相当于Python中的
+# filter(value)，且过滤器可嵌套使用，如{{value|filter1|filter2}}
+# Markup
 @app.template_filter()
 def musical(s):
     return s + Markup(' &#9835;')
 
 
 # register template test
+# 注册自定义模板测试器，使用方法为value is tester，返回值为布尔值
 @app.template_test()
 def baz(n):
     if n == 'baz':

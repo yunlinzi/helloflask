@@ -19,7 +19,7 @@
     {% for message in get_flashed_messages() %}
         <div class="alert">{{ message }}</div>
     {% endfor %}
-    {% block content %}{% endblock %}
+    {% block content %}{% endblock %} {# 在子模块中定义同名的块，将子模块内容插入这里 #}
 </main>
 <footer>
     {% block footer %}

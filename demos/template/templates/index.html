@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
-{% from 'macros.html' import qux %}
+{% from 'macros.html' import qux %} {# 从外部导入函数qux() #}
 
 {% block content %}
-{% set name='baz' %}
+{% set name='baz' %} {# 定义变量name #}
 <h1>Template</h1>
 <ul>
     <li><a href="{{ url_for('watchlist') }}">Watchlist</a></li>
