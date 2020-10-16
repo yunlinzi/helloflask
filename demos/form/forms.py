@@ -15,29 +15,40 @@ from wtforms.validators import DataRequired, Length, ValidationError, Email
 
 # 4.2.1 basic form example
 class LoginForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired()])
+    username = StringField('Username  ', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired(), Length(8, 128)])
     remember = BooleanField('Remember me')
-    submit = SubmitField('Log in')
+    submit = SubmitField('Login in')
 
 
 # custom validator
+# 客户自定义验证器：验证器必须以“validate_属性名”的形式命名，该验证器验证则是对验证名对应的数据进行验证
 class FortyTwoForm(FlaskForm):
     answer = IntegerField('The Number')
+    answer2 = IntegerField('The Number2')
+    remember = BooleanField('Remember me')
     submit = SubmitField()
 
     def validate_answer(form, field):
-        if field.data != 42:
+        if field.data != 42:  # 这里的 field.data 就是answer
             raise ValidationError('Must be 42.')
 
+    def validate_answer2(form, field):
+        if field.data != 43:  # 这里的 field.data 就是answer2
+            raise ValidationError('Must be 43.')
 
-# upload form
+    def validate_remember(form, field):  # 这里的 field.data 就是remember
+        if field.data:
+            raise ValidationError('Must be false.')
+
+
+# upload form，上传文件，这里是以图片格式为例
 class UploadForm(FlaskForm):
     photo = FileField('Upload Image', validators=[FileRequired(), FileAllowed(['jpg', 'jpeg', 'png', 'gif'])])
     submit = SubmitField()
 
 
-# multiple files upload form
+# multiple files upload form，上传多个文件
 class MultiUploadForm(FlaskForm):
     photo = MultipleFileField('Upload Image', validators=[DataRequired()])
     submit = SubmitField()

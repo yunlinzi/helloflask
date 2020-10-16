@@ -4,6 +4,7 @@
 {% block content %}
 <h2>File Upload Form</h2>
 
+{# 当上传数据为文件时，需设置enctype属性为"multipart/form-data"，否则浏览器会只把表单名作为表单数据提交 #}
 <form method="post" enctype="multipart/form-data">
     {{ form.csrf_token }}
     {{ form_field(form.photo) }}

@@ -19,10 +19,11 @@ from forms import LoginForm, FortyTwoForm, NewPostForm, UploadForm, MultiUploadF
 
 app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY', 'secret string')
-app.jinja_env.trim_blocks = True
-app.jinja_env.lstrip_blocks = True
+app.jinja_env.trim_blocks = True  # 表明删除 Jinja2 语句后的第一个空行
+app.jinja_env.lstrip_blocks = True  # 表明删除 Jinja2 语句所在行之前的空格和制表符
 
 # Custom config
+# 设置上传路径，这里为form app的根目录下的uploads文件夹，用户上传的文件即存储在这个地址
 app.config['UPLOAD_PATH'] = os.path.join(app.root_path, 'uploads')
 
 if not os.path.exists(app.config['UPLOAD_PATH']):
@@ -47,6 +48,8 @@ ckeditor = CKEditor(app)
 dropzone = Dropzone(app)
 
 
+# method 为路由指定可接收的客户端的HTTP请求类型，表单以POST方法提交更安全，
+# 而GET是默认的监听类型，所以2个都要支持（之前不写，应该默认只有GET）
 @app.route('/', methods=['GET', 'POST'])
 def index():
     return render_template('index.html')
@@ -64,11 +67,14 @@ def html():
 
 @app.route('/basic', methods=['GET', 'POST'])
 def basic():
-    form = LoginForm()
-    if form.validate_on_submit():
+    form = LoginForm()  # 实例化表单
+    # 实例化表单后，根据HTTP请求类型执行不同操作：
+    # GET请求直接渲染模板，因为不需要传数据；
+    # POST请求由于客户端需要传数据，要先验证表单数据，数据无误后再渲染
+    if form.validate_on_submit():  # 验证方法，相当于”请求类型为POST且数据验证为true“
         username = form.username.data
         flash('Welcome home, %s!' % username)
-        return redirect(url_for('index'))
+        return redirect(url_for('index'))  # 提交成功后，应返回一个GET请求（PRG技术）
     return render_template('basic.html', form=form)
 
 
@@ -78,10 +84,11 @@ def bootstrap():
     if form.validate_on_submit():
         username = form.username.data
         flash('Welcome home, %s!' % username)
-        return redirect(url_for('index'))
+        return redirect(url_for('index'))  #
     return render_template('bootstrap.html', form=form)
 
 
+# 自定义验证器的例子
 @app.route('/custom-validator', methods=['GET', 'POST'])
 def custom_validator():
     form = FortyTwoForm()
@@ -96,35 +103,42 @@ def get_file(filename):
     return send_from_directory(app.config['UPLOAD_PATH'], filename)
 
 
+# 上传成功后，show上传的照片
 @app.route('/uploaded-images')
 def show_images():
     return render_template('uploaded.html')
 
 
+# 判断文件是否是允许的类型
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
 
+# 处理文件，生成随机文件名
 def random_filename(filename):
     ext = os.path.splitext(filename)[1]
     new_filename = uuid.uuid4().hex + ext
     return new_filename
 
 
+# 上传文件
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
     form = UploadForm()
     if form.validate_on_submit():
-        f = form.photo.data
-        filename = random_filename(f.filename)
-        f.save(os.path.join(app.config['UPLOAD_PATH'], filename))
+        f = form.photo.data  # 获取所上传的文件
+        filename = random_filename(f.filename)  # 处理文件名（保证安全，统一管理）
+        f.save(os.path.join(app.config['UPLOAD_PATH'], filename))  # 存储文件
         flash('Upload success.')
         session['filenames'] = [filename]
-        return redirect(url_for('show_images'))
+        return redirect(url_for('show_images'))  # 显示所上传的文件
     return render_template('upload.html', form=form)
 
 
+# 多文件上传，当前FLASK-WTF未添加对多文件上传的渲染和验证支持
+# （可以看到forms.py中对应的表单的验证和单文件上传的表单不同，因为为提供相应的验证支持），
+# 这里是手动获取文件并验证
 @app.route('/multi-upload', methods=['GET', 'POST'])
 def multi_upload():
     form = MultiUploadForm()

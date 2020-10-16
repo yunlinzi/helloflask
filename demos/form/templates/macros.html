@@ -1,3 +1,6 @@
+
+{# 使用宏渲染表单的例子，在这里定义form_field后，在需要建表单的html中引用该宏即可 #}
+
 {% macro form_field(field) %}
     {{ field.label }}<br>
     {{ field(**kwargs) }}<br>
