@@ -54,7 +54,7 @@ class MultiUploadForm(FlaskForm):
     submit = SubmitField()
 
 
-# multiple submit button
+# multiple submit button，一个表单中多个提交按钮（这里是2个）
 class NewPostForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired(), Length(1, 50)])
     body = TextAreaField('Body', validators=[DataRequired()])
@@ -62,6 +62,8 @@ class NewPostForm(FlaskForm):
     publish = SubmitField('Publish')
 
 
+# 单个页面处理多个表单：SigninForm 和 RegisterForm
+# 方法一，为两表单设置不同的提交字段名称
 class SigninForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(1, 20)])
     password = PasswordField('Password', validators=[DataRequired(), Length(8, 128)])
@@ -88,7 +90,7 @@ class RegisterForm2(FlaskForm):
     submit = SubmitField()
 
 
-# CKEditor Form
+# CKEditor Form，富文本编辑器
 class RichTextForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired(), Length(1, 50)])
     body = CKEditorField('Body', validators=[DataRequired()])

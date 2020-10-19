@@ -14,6 +14,6 @@
 
 {% block scripts %}
     {{ super() }}
-    {{ ckeditor.load() }}
-    {{ ckeditor.config(name='body') }}
+    {{ ckeditor.load() }}  {# 渲染CKEditor需要加载相应的js脚本 #}
+    {{ ckeditor.config(name='body') }}  {# 编辑器高度、宽度和语言等设置的对象，须在加载CKEditor后使用（这里是load()之后）#}
 {% endblock %}

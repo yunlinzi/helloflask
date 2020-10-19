@@ -198,20 +198,22 @@ def dropzone_upload():
     return render_template('dropzone.html')
 
 
+# 一个表单2个提交按钮
 @app.route('/two-submits', methods=['GET', 'POST'])
 def two_submits():
     form = NewPostForm()
     if form.validate_on_submit():
-        if form.save.data:
+        if form.save.data:  # 当save被触发时此值为真
             # save it...
             flash('You click the "Save" button.')
-        elif form.publish.data:
+        elif form.publish.data:  # 当publish被触发时此值为真
             # publish it...
             flash('You click the "Publish" button.')
         return redirect(url_for('index'))
     return render_template('2submit.html', form=form)
 
 
+# 一个视图函数中处理两个表单
 @app.route('/multi-form', methods=['GET', 'POST'])
 def multi_form():
     signin_form = SigninForm()
@@ -230,13 +232,16 @@ def multi_form():
     return render_template('2form.html', signin_form=signin_form, register_form=register_form)
 
 
-@app.route('/multi-form-multi-view')
+# 通过多个视图处理一个页面中的多个表单，把渲染包含表单的模板(GET)和处理表单请求(POST)分开
+@app.route('/multi-form-multi-view')  # 渲染，GET为默认，不用写
 def multi_form_multi_view():
     signin_form = SigninForm2()
     register_form = RegisterForm2()
     return render_template('2form2view.html', signin_form=signin_form, register_form=register_form)
 
 
+# 处理表单请求（只是POST），不能在客户端直接用'/handle-signin'定位到这来，
+# 而是通过在HTML中用action属性设置（见'2form2view.html'）
 @app.route('/handle-signin', methods=['POST'])
 def handle_signin():
     signin_form = SigninForm2()
@@ -262,6 +267,7 @@ def handle_register():
     return render_template('2form2view.html', signin_form=signin_form, register_form=register_form)
 
 
+# 富文本编辑器
 @app.route('/ckeditor', methods=['GET', 'POST'])
 def integrate_ckeditor():
     form = RichTextForm()
@@ -273,7 +279,7 @@ def integrate_ckeditor():
     return render_template('ckeditor.html', form=form)
 
 
-# handle image upload for ckeditor
+# handle image upload for ckeditor，处理在富文本编辑器里上传图片的问题
 @app.route('/upload-ck', methods=['POST'])
 def upload_for_ckeditor():
     f = request.files.get('upload')
